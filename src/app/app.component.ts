@@ -96,7 +96,7 @@ export class AppComponent {
       mockVideos.push({
         id,
         videoUrl: `https://example.com/video${id}.mp4`,
-        color: 'orange',
+        color: randomColor(),
         username: `user${id}`,
         description: `This is auto-loaded video #${id} #tiktok #viral`,
         likes: Math.floor(Math.random() * 10000) + 500,
@@ -107,4 +107,15 @@ export class AppComponent {
 
     return mockVideos;
   }
+}
+
+
+function randomColor() {
+  // Generate random values for red, green, and blue (0-255)
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+
+  // Return the color in rgb format
+  return `rgb(${r}, ${g}, ${b})`;
 }
