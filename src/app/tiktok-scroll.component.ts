@@ -326,6 +326,43 @@ export class TiktokScrollComponent implements AfterViewInit {
     this.dragOffset = 0;
   }
 
+  // Keyboard navigation
+  keyNavigationCooldown = 300; // Time in ms to prevent rapid consecutive key presses
+  isKeyNavigating = false;
+  keyTimeout: any = null;
+  showKeyboardHint = true;
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    // Check if we're in cooldown period
+    if (this.isKeyNavigating) {
+      return;
+    }
+
+    // Handle arrow keys
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.isKeyNavigating = true;
+
+      if (
+        event.key === 'ArrowDown' &&
+        this.currentIndex < this.videos.length - 1
+      ) {
+        // Down arrow - go to next video
+        this.goToNextVideo();
+      } else if (event.key === 'ArrowUp' && this.currentIndex > 0) {
+        // Up arrow - go to previous video
+        this.goToPreviousVideo();
+      }
+
+      // Set cooldown timer
+      clearTimeout(this.keyTimeout);
+      this.keyTimeout = setTimeout(() => {
+        this.isKeyNavigating = false;
+      }, this.keyNavigationCooldown);
+    }
+  }
+
   // Mouse wheel scroll handling
   isScrolling = false;
   scrollTimeout: any = null;
