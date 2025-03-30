@@ -34,6 +34,7 @@ interface VideoItem {
       (touchstart)="onTouchStart($event)"
       (touchmove)="onTouchMove($event)"
       (touchend)="onTouchEnd($event)"
+      (wheel)="onWheel($event)"
     >
       <div
         class="video-wrapper"
@@ -315,19 +316,64 @@ export class TiktokScrollComponent implements AfterViewInit {
       this.currentIndex < this.videos.length - 1
     ) {
       // Swipe up - go to next video
-      this.pauseVideo(this.currentIndex);
-      this.currentIndex++;
-      this.playVideo(this.currentIndex);
-      this.checkLoadMore();
+      this.goToNextVideo();
     } else if (this.dragOffset > threshold && this.currentIndex > 0) {
       // Swipe down - go to previous video
-      this.pauseVideo(this.currentIndex);
-      this.currentIndex--;
-      this.playVideo(this.currentIndex);
+      this.goToPreviousVideo();
     }
 
     this.isDragging = false;
     this.dragOffset = 0;
+  }
+
+  // Mouse wheel scroll handling
+  isScrolling = false;
+  scrollTimeout: any = null;
+  scrollThreshold = 50; // Minimum scroll delta to trigger a navigation
+  scrollCooldown = 500; // Time in ms to prevent rapid consecutive scrolls
+
+  onWheel(event: WheelEvent) {
+    event.preventDefault();
+
+    // Check if we're still in cooldown from a previous scroll
+    if (this.isScrolling) {
+      return;
+    }
+
+    // Determine scroll direction and if it meets the threshold
+    const delta = event.deltaY;
+
+    if (Math.abs(delta) >= this.scrollThreshold) {
+      this.isScrolling = true;
+
+      if (delta > 0 && this.currentIndex < this.videos.length - 1) {
+        // Scroll down - go to next video
+        this.goToNextVideo();
+      } else if (delta < 0 && this.currentIndex > 0) {
+        // Scroll up - go to previous video
+        this.goToPreviousVideo();
+      }
+
+      // Set cooldown timer to prevent rapid consecutive scrolls
+      clearTimeout(this.scrollTimeout);
+      this.scrollTimeout = setTimeout(() => {
+        this.isScrolling = false;
+      }, this.scrollCooldown);
+    }
+  }
+
+  // Video navigation
+  goToNextVideo() {
+    this.pauseVideo(this.currentIndex);
+    this.currentIndex++;
+    this.playVideo(this.currentIndex);
+    this.checkLoadMore();
+  }
+
+  goToPreviousVideo() {
+    this.pauseVideo(this.currentIndex);
+    this.currentIndex--;
+    this.playVideo(this.currentIndex);
   }
 
   togglePlayPause(index: number) {

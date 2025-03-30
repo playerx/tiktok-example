@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none; /* Prevents browser bounce effect */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
