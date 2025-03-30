@@ -10,7 +10,6 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BehaviorSubject } from 'rxjs';
 
 interface VideoItem {
   id: string;
